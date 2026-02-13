@@ -1,0 +1,19 @@
+{
+  "name": "medal-tracker",
+  "version": "1.0.0",
+  "description": "Live Olympics medal tracker with data narratives — Milano Cortina 2026",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "bhackerb",
+  "license": "MIT"
+}

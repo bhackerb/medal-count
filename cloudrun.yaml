@@ -1,0 +1,50 @@
+# Cloud Run service configuration
+# Deploy with: gcloud run services replace cloudrun.yaml
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: medal-tracker
+  labels:
+    cloud.googleapis.com/location: us-central1
+  annotations:
+    run.googleapis.com/description: "Live Olympics Medal Tracker — Milano Cortina 2026"
+spec:
+  template:
+    metadata:
+      annotations:
+        # Allow 1 instance to stay warm (reduces cold starts)
+        autoscaling.knative.dev/minScale: "0"
+        autoscaling.knative.dev/maxScale: "3"
+        # 512MB is plenty for this app
+        run.googleapis.com/memory: "512Mi"
+        run.googleapis.com/cpu: "1"
+        run.googleapis.com/startup-cpu-boost: "true"
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      containers:
+        - image: IMAGE_URL  # Replace during deploy
+          ports:
+            - containerPort: 8080
+          env:
+            - name: NODE_ENV
+              value: "production"
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "1"
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            periodSeconds: 30
+  traffic:
+    - percent: 100
+      latestRevision: true
